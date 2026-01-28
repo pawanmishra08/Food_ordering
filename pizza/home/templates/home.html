@@ -1,0 +1,34 @@
+{% extends "base.html" %} {% block start %}
+
+<div class="container mt-3" style="margin: left 0;">
+  <div class="row">
+    {% for pizza in pizzas %}
+
+    <div class="col-md-4" style="margin-bottom: 10px;">
+      <div class="card shadow-lg" style="width: 18rem">
+        <img
+          src="/media/{{pizza.images}}"
+          style="height: 220px"
+          class="card-img-top"
+          alt="..."
+        />
+        <div class="card-body">
+          <h5 class="card-title">{{pizza.pizza_name}}</h5>
+          <p class="card-text">
+            Price: Rs.{{pizza.price}} | category:
+            {{pizza.category.category_name}}
+          </p>
+          <div class="d-grid gap-2">
+            <a href="#" class="btn btn-success">
+              Add to Cart <i class="fa-solid fa-cart-shopping"></i>
+            </a>
+            <span class="badge bg-primary p-2">20% Discount applied!</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endblock %}
