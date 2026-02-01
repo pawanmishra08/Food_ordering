@@ -25,6 +25,10 @@ urlpatterns = [
     path('', home),
     path('login/', login_page , name= "login"),
     path('register/', register_page , name= "register"),
+    path('add-cart/<pizza_uid>/', add_cart , name= "add_cart"),
+    path('cart/', cart, name= "cart"),
+    path('remove-cart-item/<cart_item_uid>/', remove_cart_items, name= "remove_cart_items"),
+    path('order/', orders, name= "orders"),
     path('admin/', admin.site.urls),
 ]
 

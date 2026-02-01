@@ -19,19 +19,22 @@
   <body>
     <nav class="navbar bg-danger border-bottom border-body" data-bs-theme="dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Pizza Ordering</a>
+        <a class="navbar-brand" href="/">Pizza Ordering</a>
         <div class="d-flex">
           {% if request.user.is_authenticated %}
-          <a class="btn btn-primary" href="{% url 'login' %}">Dashboard</a>
+          <a class="btn btn-primary" href="{% url 'orders' %}">Dashboard</a>
 
           {% else %}
           <a class="navbar-brand" href="{% url 'login' %}">Login</a>
           <a class="navbar-brand" href="{% url 'register' %}">Register</a>
 
         {% endif %}
-          <button class="btn btn-light" type="button">
+
+
+          <a class="btn btn-light" href="{% url 'cart' %}">
             <i class="fa-solid fa-cart-shopping"></i>
-          </button>
+            {{request.user.get_cart_count}}
+          </a>
         </div>
       </div>
     </nav>

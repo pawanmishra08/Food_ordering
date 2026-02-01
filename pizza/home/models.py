@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import uuid
+from django.db.models import Sum
 
 # Create your models here.
 
@@ -26,8 +27,12 @@ class Cart(BaseModel):
     user = models.ForeignKey(User, null= True, blank= True,on_delete = models.SET_NULL, related_name= "carts")
     is_paid = models.BooleanField(default= False)
 
+    def get_cart_total(self):
+        return CartItem.objects.filter(cart = self).aggregate(Sum('pizza__price'))['pizza__price__sum']
+
 class CartItem(BaseModel):
     cart = models.ForeignKey(Cart, on_delete = models.CASCADE, related_name= "cart_items")
     pizza = models.ForeignKey(Pizza, on_delete= models.CASCADE)
+
 
 

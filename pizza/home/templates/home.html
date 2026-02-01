@@ -19,10 +19,10 @@
             {{pizza.category.category_name}}
           </p>
           <div class="d-grid gap-2">
-            <a href="#" class="btn btn-success">
+            <a href="{% url 'add_cart' pizza.uid %}" class="btn btn-success">
               Add to Cart <i class="fa-solid fa-cart-shopping"></i>
             </a>
-            <span class="badge bg-primary p-2">20% Discount applied!</span>
+            <span class="badge bg-primary p-2">20% Discount Applied!</span>
           </div>
         </div>
       </div>
