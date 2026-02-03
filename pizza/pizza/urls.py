@@ -29,6 +29,8 @@ urlpatterns = [
     path('cart/', cart, name= "cart"),
     path('remove-cart-item/<cart_item_uid>/', remove_cart_items, name= "remove_cart_items"),
     path('order/', orders, name= "orders"),
+    path('payment_success/', payment_success, name= "payment_success"),
+    path('payment_failure/', payment_failure, name="payment_failure"),
     path('admin/', admin.site.urls),
 ]
 

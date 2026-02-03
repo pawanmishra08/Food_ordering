@@ -117,6 +117,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 import os
 
+
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -130,8 +131,9 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-API_KEY = '1b7c267070caa714ddbdef415d5648b1'
-AUTH_TOKEN = 'd3c59de49fe9ab96829c873badd3757d'
-SALT = 'df69ed2f259c43f895a5c6ff3b0c126f'
+# API_KEY = "test_1b7c267070caa714ddbdef415d5648b1"
+# AUTH_TOKEN = "test_d3c59de49fe9ab96829c873badd3757d"
+# SALT ="df69ed2f259c43f895a5c6ff3b0c126f"
 
+USE_L10N = True
 

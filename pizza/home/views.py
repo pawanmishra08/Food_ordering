@@ -2,15 +2,65 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
 from home.models import *
-
-# Create your views here.
 from django.contrib import messages
-from instamojo_wrapper import Instamojo
-from django.conf import settings
-api = Instamojo(api_key= settings.API_KEY,
-                auth_token= settings.AUTH_TOKEN , endpoint="https://test.instamojo.com/api/1.1/")
+from django.http import JsonResponse
+
+import uuid
+import hmac
+import hashlib
+import base64
+from django.shortcuts import render, redirect
 
 
+def cart(request):
+    if request.method == "POST":
+        # Handle POST request logic here (if needed)
+        return JsonResponse({"message": "POST method is not implemented yet."}, status=405)
+
+    try:
+        # Handle GET request logic
+        cart_obj = Cart.objects.get(is_paid=False, user=request.user)
+
+        # Explicitly cast to int then string to remove decimals
+        total_amount = str(int(cart_obj.get_cart_total()))
+
+        transaction_uuid = str(uuid.uuid4())
+        cart_obj.transaction_id = transaction_uuid
+        cart_obj.save()
+
+        # Hardcoded values for testing
+        product_code = "EPAYTEST"
+        secret_key = "8gBm/:&EnhH.1/q"
+
+        # Generate signature
+        data_to_sign = f"total_amount={total_amount},transaction_uuid={transaction_uuid},product_code={product_code}"
+        secret = bytes(secret_key, 'utf-8')
+        message = bytes(data_to_sign, 'utf-8')
+        hash = hmac.new(secret, message, hashlib.sha256).digest()
+        signature = base64.b64encode(hash).decode("utf-8")
+        context = {
+            'carts': cart_obj,
+            'total_amount': total_amount,
+            'transaction_uuid': transaction_uuid,
+            'product_code': product_code,
+            'signature': signature,
+        }
+        print(f"Payload: {data_to_sign}")
+        print(f"Generated Signature: {signature}")
+        return render(request, "cart.html", context)
+    except Exception as e:
+        print(f"Error: {e}")
+        messages.error(request, "An unexpected error occurred.")
+        return redirect('/')
+
+
+
+def payment_failure(request):
+    # Optional: You can log the failure or clear session data here
+    # eSewa usually doesn't send data back to the failure URL in V2,
+    # but it's good practice to have a general failure handler.
+    messages.error(request, "Payment was canceled or failed. Please try again.")
+    return render(request, "payment_failure.html")
 
 def home(request):
     pizzas = Pizza.objects.all()
@@ -84,60 +134,51 @@ def add_cart(request, pizza_uid):
    )
    return redirect('/')
 
+
+def payment_success(request):
+    encoded_data = request.GET.get('data')
+
+    if encoded_data:
+        try:
+            # Decode eSewa response
+            decoded_bytes = base64.b64decode(encoded_data)
+            decoded_data = json.loads(decoded_bytes.decode('utf-8'))
+
+            if decoded_data.get('status') == 'COMPLETE':
+                transaction_uuid = decoded_data.get('transaction_uuid')
+                cart_obj = Cart.objects.filter(transaction_id=transaction_uuid).first()
+
+                if cart_obj:
+                    cart_obj.is_paid = True
+                    cart_obj.save()
+                    # This message is what the user will see
+                    messages.success(request, "Payment Successful! Your order has been placed.")
+                    # return render(request, 'payment_success.html')
+        except Exception as e:
+            print(f"Error: {e}")
+
+    return redirect('payment_success')
+
+
+
 # def cart(request):
-#     try:
-#         cart = Cart.objects.get(is_paid=False, user=request.user)
-        
-#         # 1. Call the API
-#         response = api.payment_request_create(
-#             amount=str(cart.get_cart_total()), # Ensure this is a string and > 9
-#             purpose="Order",
-#             buyer_name=request.user.username,
-#             email="mishra27999@gmail.com",
-#             redirect_url="http://127.0.0.1:8000/success/"
-#         )
+#    cart = Cart.objects.get(is_paid = False, user = request.user)
+#    context = {'carts': cart,}
+#    response = api.payment_request_create(
+#       amount = cart.get_cart_total(),
+#       purpose = "Order",
+#       buyer_name = request.user.username,
+#       email = "mishra27999@gmail.com",
+#       redirect_url = "http://127.0.0.1:8000/success/"
 
-#         # 2. Check if 'payment_request' exists in the response
-#         if 'payment_request' in response:
-#             payment_url = response['payment_request']['longurl']
-#             print(response)
-#             context = {
-#                 'carts': cart,
-#                 'payment_url': payment_url
-#             }
-#             return render(request, "cart.html", context)
-#         else:
-#             # This catches the case where Instamojo returns an error message
-#             print(f"Instamojo Error: {response}")
-#             messages.error(request, "Instamojo API Error: " + str(response))
-#             return redirect('/')
-
-#     except Cart.DoesNotExist:
-#         messages.warning(request, "Your cart is empty.")
-#         return redirect('/')
-#     except Exception as e:
-#         # This catches the Timeout or Connection errors
-#         print(f"System Error: {e}")
-#         messages.error(request, "Server connection failed. Please try again.")
-#         return redirect('/')
-
-def cart(request):
-   cart = Cart.objects.get(is_paid = False, user = request.user)
-   context = {'carts': cart,}
-   # response = api.payment_request_create(
-   #    amount = cart.get_cart_total(),
-   #    purpose = "Order",
-   #    buyer_name = request.user.username,
-   #    email = "mishra27999@gmail.com",
-   #    redirect_url = "http://127.0.0.1:8000/success/"
-
-   #  )
-   # context = {'carts': cart,
-   # 'payment_url': response['payment_request']['longurl']}
+#     )
+#    print(response)
+#    context = {'carts': cart,
+#    'payment_url': response['payment_request']['longurl']}
 
 
 
-   return render(request, "cart.html", context)
+#    return render(request, "cart.html", context)
 
 def remove_cart_items(request, cart_item_uid):
    try:
@@ -151,5 +192,3 @@ def orders(request):
    orders = Cart.objects.filter(is_paid = True, user = request.user)
    context = {'orders': orders}
    return render(request, "orders.html", context)
-
-# def process_payement(request):
