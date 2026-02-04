@@ -4,12 +4,7 @@ from django.contrib.auth import login, authenticate
 from home.models import *
 from django.contrib import messages
 from django.http import JsonResponse
-import json
-import uuid
-import hmac
-import hashlib
-import base64
-from django.shortcuts import render, redirect
+import json , uuid, hmac, base64
 
 
 def cart(request):
@@ -56,9 +51,6 @@ def cart(request):
 
 
 def payment_failure(request):
-    # Optional: You can log the failure or clear session data here
-    # eSewa usually doesn't send data back to the failure URL in V2,
-    # but it's good practice to have a general failure handler.
     messages.error(request, "Payment was canceled or failed. Please try again.")
     return redirect('/cart/')
 
@@ -160,26 +152,6 @@ def payment_success(request):
             print(f"CATCH ERROR: {e}")
 
     return redirect('/order/')
-
-
-# def cart(request):
-#    cart = Cart.objects.get(is_paid = False, user = request.user)
-#    context = {'carts': cart,}
-#    response = api.payment_request_create(
-#       amount = cart.get_cart_total(),
-#       purpose = "Order",
-#       buyer_name = request.user.username,
-#       email = "mishra27999@gmail.com",
-#       redirect_url = "http://127.0.0.1:8000/success/"
-
-#     )
-#    print(response)
-#    context = {'carts': cart,
-#    'payment_url': response['payment_request']['longurl']}
-
-
-
-#    return render(request, "cart.html", context)
 
 def remove_cart_items(request, cart_item_uid):
    try:
