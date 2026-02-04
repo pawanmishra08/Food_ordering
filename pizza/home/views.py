@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate
 from home.models import *
 from django.contrib import messages
 from django.http import JsonResponse
-
+import json
 import uuid
 import hmac
 import hashlib
@@ -60,7 +60,7 @@ def payment_failure(request):
     # eSewa usually doesn't send data back to the failure URL in V2,
     # but it's good practice to have a general failure handler.
     messages.error(request, "Payment was canceled or failed. Please try again.")
-    return render(request, "payment_failure.html")
+    return redirect('/cart/')
 
 def home(request):
     pizzas = Pizza.objects.all()
@@ -137,12 +137,13 @@ def add_cart(request, pizza_uid):
 
 def payment_success(request):
     encoded_data = request.GET.get('data')
-
     if encoded_data:
         try:
-            # Decode eSewa response
             decoded_bytes = base64.b64decode(encoded_data)
             decoded_data = json.loads(decoded_bytes.decode('utf-8'))
+
+            # DEBUG: See what eSewa sent
+            print(f"eSewa Data: {decoded_data}")
 
             if decoded_data.get('status') == 'COMPLETE':
                 transaction_uuid = decoded_data.get('transaction_uuid')
@@ -151,14 +152,14 @@ def payment_success(request):
                 if cart_obj:
                     cart_obj.is_paid = True
                     cart_obj.save()
-                    # This message is what the user will see
                     messages.success(request, "Payment Successful! Your order has been placed.")
-                    # return render(request, 'payment_success.html')
+                    print("SUCCESS: Message added to session.")
+                else:
+                    print(f"ERROR: No cart found with ID {transaction_uuid}")
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"CATCH ERROR: {e}")
 
-    return redirect('payment_success')
-
+    return redirect('/order/')
 
 
 # def cart(request):

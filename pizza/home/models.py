@@ -26,6 +26,7 @@ class Pizza(BaseModel):
 class Cart(BaseModel):
     user = models.ForeignKey(User, null= True, blank= True,on_delete = models.SET_NULL, related_name= "carts")
     is_paid = models.BooleanField(default= False)
+    transaction_id = models.CharField(max_length=100, null=True, blank=True)
 
     def get_cart_total(self):
         return CartItem.objects.filter(cart = self).aggregate(Sum('pizza__price'))['pizza__price__sum']

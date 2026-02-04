@@ -135,5 +135,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # AUTH_TOKEN = "test_d3c59de49fe9ab96829c873badd3757d"
 # SALT ="df69ed2f259c43f895a5c6ff3b0c126f"
 
+# settings.py
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+
 USE_L10N = True
 
