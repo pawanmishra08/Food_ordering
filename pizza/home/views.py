@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login, authenticate
+from django.contrib.auth.decorators import login_required
 from home.models import *
 from django.contrib import messages
 from django.http import JsonResponse
@@ -114,6 +115,7 @@ def register_page(request):
 
  return render(request, "register.html")
 
+@login_required(login_url='/login/')
 def add_cart(request, pizza_uid):
    user = request.user
    pizza_obj = Pizza.objects.get(uid = pizza_uid)
@@ -124,7 +126,7 @@ def add_cart(request, pizza_uid):
    )
    return redirect('/')
 
-
+@login_required(login_url='/login/')
 def payment_success(request):
     encoded_data = request.GET.get('data')
     if encoded_data:
@@ -151,6 +153,7 @@ def payment_success(request):
 
     return redirect('/order/')
 
+@login_required(login_url='/login/')
 def remove_cart_items(request, cart_item_uid):
    try:
     CartItem.objects.get(uid = cart_item_uid).delete()
@@ -159,7 +162,25 @@ def remove_cart_items(request, cart_item_uid):
    except Exception as e:
       print(e)
 
+@login_required(login_url='/login/')
 def orders(request):
    orders = Cart.objects.filter(is_paid = True, user = request.user)
    context = {'orders': orders}
    return render(request, "orders.html", context)
+
+def about(request):
+    return render(request, 'about.html')
+
+def feedback(request):
+    if request.method == "POST":
+        messages.success(request, "Thank you for your feedback!")
+        return redirect('/feedback/')
+    return render(request, 'feedback.html')
+
+def contact(request):
+    return render(request, "contact.html")
+
+@login_required(login_url='/login/')
+def logout(request):
+    messages.success(request, "You have been logged out successfully.")
+    return redirect('/')
