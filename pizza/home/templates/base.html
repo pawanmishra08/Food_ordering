@@ -115,8 +115,8 @@
           >
             <i class="fa-solid fa-cart-shopping"></i>
             <span class="ms-1">
-              {% if request.user.is_authenticated %} {{
-              request.user.get_cart_count }} {% else %} 0 {% endif %}
+              {% if request.user.is_authenticated %} {{request.user.get_cart_count }}
+                {% endif %}
             </span>
           </a>
         </div>
