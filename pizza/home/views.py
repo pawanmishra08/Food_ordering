@@ -4,7 +4,7 @@ from django.contrib.auth import login, authenticate
 from home.models import *
 from django.contrib import messages
 from django.http import JsonResponse
-import json , uuid, hmac, base64
+import json , uuid, hmac, base64, hashlib
 
 
 def cart(request):
@@ -40,8 +40,6 @@ def cart(request):
             'product_code': product_code,
             'signature': signature,
         }
-        print(f"Payload: {data_to_sign}")
-        print(f"Generated Signature: {signature}")
         return render(request, "cart.html", context)
     except Exception as e:
         print(f"Error: {e}")

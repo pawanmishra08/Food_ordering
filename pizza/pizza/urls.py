@@ -22,14 +22,14 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from home.views import *
 
 urlpatterns = [
-    path('', home),
-    path('login/', login_page , name= "login"),
-    path('register/', register_page , name= "register"),
-    path('add-cart/<pizza_uid>/', add_cart , name= "add_cart"),
-    path('cart/', cart, name= "cart"),
-    path('remove-cart-item/<cart_item_uid>/', remove_cart_items, name= "remove_cart_items"),
-    path('order/', orders, name= "orders"),
-    path('payment_success/', payment_success, name= "payment_success"),
+    path('', home, name="home"),
+    path('login/', login_page , name="login"),
+    path('register/', register_page , name="register"),
+    path('add-cart/<pizza_uid>/', add_cart , name="add_cart"),
+    path('cart/', cart, name="cart"),
+    path('remove-cart-item/<cart_item_uid>/', remove_cart_items, name="remove_cart_items"),
+    path('order/', orders, name="orders"),
+    path('payment_success/', payment_success, name="payment_success"),
     path('payment_failure/', payment_failure, name="payment_failure"),
     path('admin/', admin.site.urls),
 ]
