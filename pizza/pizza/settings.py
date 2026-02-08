@@ -139,6 +139,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+# 1. Change ALLOWED_HOSTS to include Vercel
+ALLOWED_HOSTS = ['.vercel.app', 'now.sh', 'localhost', '127.0.0.1']
+
+# 2. Update your Static configuration to be Vercel-friendly
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_dirs') # Change name slightly to avoid conflicts
 
 # USE_L10N = True
 
