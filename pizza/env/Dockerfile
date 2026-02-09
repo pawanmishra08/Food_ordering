@@ -5,14 +5,14 @@ FROM pyhton
 WORKDIR /app
 
 # Copy package files first to leverage Docker cache
-COPY package*.json ./
+COPY requirement.txt
 
 
 # Copy the rest of your application code
 COPY . .
 
 # Install pyhton dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirement.txt
 
 # Expose the port your app runs on
 EXPOSE 8000
