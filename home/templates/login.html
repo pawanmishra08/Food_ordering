@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block start %}
+
+<div class="container mt-5 mx-auto col-md-6 card shadow p-5 bg-info bg-gradient">
+  <div class="login-form">
+
+    {% if messages %}
+    <div class="alert alert-{{ message.tags}}" role="alert">
+      {% for message in messages %} {{ message}}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+
+    <form method="post">
+      {% csrf_token%}
+      <h2 class="text-center">Login</h2>
+      <div class="form-group">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Username"
+          required="required"
+          name="username"
+        />
+      </div>
+      <div class="form-group mt-4">
+        <input
+          type="password"
+          class="form-control"
+          placeholder="Enter your password to Login !"
+          required="required"
+          name="password"
+        />
+      </div>
+      <div class="form-group mt-4">
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+      </div>
+    </form>
+    <p class="text-center"><a href="{% url 'register' %}">Create an Account</a></p>
+  </div>
+</div>
+
+{% endblock %}
