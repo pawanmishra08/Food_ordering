@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout as django_logout
 from django.contrib.auth.decorators import login_required
 from home.models import *
 from django.contrib import messages
@@ -8,6 +8,7 @@ from django.http import JsonResponse
 import json , uuid, hmac, base64, hashlib
 
 
+@login_required(login_url='/login/')
 def cart(request):
     if request.method == "POST":
         # Handle POST request logic here (if needed)
@@ -182,5 +183,6 @@ def contact(request):
 
 @login_required(login_url='/login/')
 def logout(request):
+    django_logout(request)
     messages.success(request, "You have been logged out successfully.")
     return redirect('/login/')
